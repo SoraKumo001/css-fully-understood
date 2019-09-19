@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+  <meta charset="utf-8">
+  <title>CSS完全に理解した</title>
+  <style>
+    div:first-child {
+      position: absolute;
+      top: 100px;
+      left: 100px;
+      width: 200px;
+      height: 80px;
+      border: solid 1px;
+      border-radius: 8px;
+    }
+
+    div:nth-child(2) {
+      user-select: none;
+      position: absolute;
+      left: 210px;
+      top: 120px;
+      cursor: move;
+    }
+  </style>
+  <script>
+    const getPos=function(e){
+      let p;
+      if (
+        e.targetTouches &&
+        e.targetTouches.length
+      ) {
+        let touch = e.targetTouches[0];
+        p = { x: touch.pageX, y: touch.pageY };
+      } else {
+        p = { x: e.clientX, y: e.clientY };
+      }
+      return p;
+    }
+
+    let downFlag = false;
+    let downPos;
+    let baseX, baseY;
+    let targetX, targetY;
+
+    addEventListener("DOMContentLoaded", function () {
+      const textNode = document.querySelector("div:nth-child(2)");
+      targetX = textNode.offsetLeft;
+      targetY = textNode.offsetTop;
+      const mouseDown = function (e) {
+        downFlag = true;
+        downPos = getPos(e);
+        baseX = this.offsetLeft;
+        baseY = this.offsetTop;
+      }
+      const mouseMove = function (e) {
+        if (downFlag) {
+          const p = getPos(e);
+          textNode.style.left = baseX + p.x - downPos.x + "px";
+          textNode.style.top = baseY + p.y - downPos.y + "px";
+        }
+      }
+      const mouseUp = function () {
+        downFlag = false;
+      }
+      textNode.addEventListener("mousedown", mouseDown);
+      textNode.addEventListener("touchstart", mouseDown);
+      addEventListener("mousemove", mouseMove);
+      addEventListener("touchmove", mouseMove);
+      addEventListener("mouseup", mouseUp);
+      addEventListener("touchend", mouseUp);
+      setInterval(function () {
+        if (!downFlag) {
+          textNode.style.left = textNode.offsetLeft + (targetX - textNode.offsetLeft) / 10 + "px";
+          textNode.style.top = textNode.offsetTop + (targetY - textNode.offsetTop) / 10 + "px";
+        }
+      }, 1)
+    });
+  </script>
+</head>
+
+<body>
+  <div></div>
+  <div>CSS<br>完全に理解した</div>
+</body>
+
+</html>
